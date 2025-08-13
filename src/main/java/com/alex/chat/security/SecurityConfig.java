@@ -18,8 +18,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/ws/**").permitAll()
+                .requestMatchers("/api/test/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll() // Allow all requests for development
             )
             .headers(headers -> headers.frameOptions().disable()); // For H2 console
         
