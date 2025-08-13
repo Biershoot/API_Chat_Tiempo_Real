@@ -31,28 +31,43 @@ A real-time chat application built with Spring Boot, featuring WebSocket communi
 
 ## 🔧 Installation
 
+### Option 1: Development Mode (Recommended for testing)
+
 1. **Clone the repository**
    ```bash
    git clone https://github.com/Biershoot/API_Chat_Tiempo_Real.git
    cd API_Chat_Tiempo_Real
    ```
 
-2. **Configure the database**
-   - Create a MySQL database
-   - Update `application.properties` with your database credentials
-
-3. **Configure Redis**
-   - Ensure Redis is running on your system
-   - Update Redis configuration in `application.properties` if needed
-
-4. **Build the project**
+2. **Run with H2 in-memory database (no setup required)**
    ```bash
-   mvn clean install
+   # Using Maven wrapper (recommended)
+   ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+   
+   # Or using Maven if installed
+   mvn spring-boot:run -Dspring-boot.run.profiles=dev
    ```
 
-5. **Run the application**
+3. **Access the application**
+   - API Health Check: http://localhost:8080/api/test/health
+   - H2 Database Console: http://localhost:8080/h2-console
+   - JDBC URL: `jdbc:h2:mem:testdb`
+   - Username: `sa`
+   - Password: `password`
+
+### Option 2: Production Mode (MySQL + Redis)
+
+1. **Prerequisites**
+   - MySQL 8.0+ running on localhost:3306
+   - Redis 6.0+ running on localhost:6379
+
+2. **Configure database**
+   - Create a MySQL database named `api_chat`
+   - Update `application.properties` with your database credentials
+
+3. **Run the application**
    ```bash
-   mvn spring-boot:run
+   ./mvnw spring-boot:run
    ```
 
 ## 📁 Project Structure
@@ -76,11 +91,25 @@ src/main/java/com/alex/chat/
 
 ## 🔌 API Endpoints
 
-The application provides RESTful endpoints for:
-- User management
+### Test Endpoints
+- `GET /api/test/health` - Health check endpoint
+- `GET /api/test/info` - Application information
+
+### WebSocket Endpoints
+- `WS /ws` - WebSocket connection endpoint
+- `STOMP /app` - Application destination prefix
+- `STOMP /topic` - Topic-based messaging
+- `STOMP /queue` - Queue-based messaging
+- `STOMP /user` - User-specific messaging
+
+### Database Console (Development)
+- `GET /h2-console` - H2 Database Console (dev profile only)
+
+### Planned Endpoints
+- User management (CRUD operations)
 - Chat room operations
 - Message handling
-- WebSocket connections for real-time communication
+- Authentication and authorization
 
 ## 🔐 Security
 
