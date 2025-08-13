@@ -56,12 +56,12 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
 Una vez que la aplicación esté ejecutándose:
 
-- **Health Check:** http://localhost:8080/api/test/health
-- **Info:** http://localhost:8080/api/test/info
-- **H2 Console:** http://localhost:8080/h2-console
+- **Health Check:** http://localhost:8081/api/test/health
+- **Info:** http://localhost:8081/api/test/info
+- **H2 Console:** http://localhost:8081/h2-console
   - JDBC URL: `jdbc:h2:mem:testdb`
-  - Username: `sa`
-  - Password: `password`
+  - Username: `root`
+  - Password: `root`
 
 ## 🔍 Solución de Problemas
 
@@ -120,3 +120,4 @@ Si encuentras problemas:
 ---
 
 **¡El proyecto está listo para ejecutarse! 🎉**
+

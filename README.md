@@ -49,11 +49,11 @@ A real-time chat application built with Spring Boot, featuring WebSocket communi
    ```
 
 3. **Access the application**
-   - API Health Check: http://localhost:8080/api/test/health
-   - H2 Database Console: http://localhost:8080/h2-console
+   - API Health Check: http://localhost:8081/api/test/health
+   - H2 Database Console: http://localhost:8081/h2-console
    - JDBC URL: `jdbc:h2:mem:testdb`
-   - Username: `sa`
-   - Password: `password`
+   - Username: `root`
+   - Password: `root`
 
 ### Option 2: Production Mode (MySQL + Redis)
 
@@ -104,6 +104,11 @@ src/main/java/com/alex/chat/
 
 ### Database Console (Development)
 - `GET /h2-console` - H2 Database Console (dev profile only)
+
+### Access URLs
+- **Health Check:** http://localhost:8081/api/test/health
+- **Info:** http://localhost:8081/api/test/info
+- **H2 Console:** http://localhost:8081/h2-console
 
 ### Planned Endpoints
 - User management (CRUD operations)

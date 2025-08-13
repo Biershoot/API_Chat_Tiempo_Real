@@ -94,10 +94,10 @@ com.alex.chat/
 
 ## 🌐 **Endpoints Disponibles**
 
-- **Health Check:** http://localhost:8080/api/test/health
-- **Info:** http://localhost:8080/api/test/info
-- **H2 Console:** http://localhost:8080/h2-console
-- **WebSocket:** ws://localhost:8080/ws
+- **Health Check:** http://localhost:8081/api/test/health
+- **Info:** http://localhost:8081/api/test/info
+- **H2 Console:** http://localhost:8081/h2-console
+- **WebSocket:** ws://localhost:8081/ws
 
 ## 🚀 **Cómo Ejecutar**
 
