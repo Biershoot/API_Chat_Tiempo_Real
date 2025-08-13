@@ -1,4 +1,4 @@
-package com.alejandro.microservices.api_chat.chat.user.entity;
+package com.alex.chat.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

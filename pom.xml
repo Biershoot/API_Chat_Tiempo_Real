@@ -12,7 +12,7 @@
     <artifactId>realtime-chat</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>realtime-chat</name>
-    <description>realtime-chat</description>
+    <description>API Chat Tiempo Real - Real-time chat application with Spring Boot</description>
     <properties>
         <java.version>21</java.version>
     </properties>

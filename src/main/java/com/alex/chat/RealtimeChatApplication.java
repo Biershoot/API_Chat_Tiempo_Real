@@ -1,13 +1,13 @@
-package com.alejandro.microservices.api_chat;
+package com.alex.chat;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ApiChatApplication {
+public class RealtimeChatApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ApiChatApplication.class, args);
+        SpringApplication.run(RealtimeChatApplication.class, args);
     }
 
 }

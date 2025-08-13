@@ -1,7 +1,7 @@
-package com.alejandro.microservices.api_chat.chat.message.repo;
+package com.alex.chat.message.repo;
 
-import com.alejandro.microservices.api_chat.chat.chat.entity.Chat;
-import com.alejandro.microservices.api_chat.chat.message.entity.Message;
+import com.alex.chat.chat.entity.Chat;
+import com.alex.chat.message.entity.Message;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -58,13 +58,20 @@ A real-time chat application built with Spring Boot, featuring WebSocket communi
 ## 📁 Project Structure
 
 ```
-src/main/java/com/alejandro/microservices/api_chat/
-├── ApiChatApplication.java          # Main application class
-└── chat/
-    ├── RealtimeChatApplication.java # WebSocket configuration
-    ├── chat/                        # Chat-related components
-    ├── message/                     # Message handling
-    └── user/                        # User management
+src/main/java/com/alex/chat/
+├── RealtimeChatApplication.java     # Main application class
+├── config/                          # Configuration classes
+├── security/                        # Security configuration
+├── websocket/                       # WebSocket configuration
+├── user/
+│   ├── entity/                      # User entity
+│   └── repo/                        # User repository
+├── chat/
+│   ├── entity/                      # Chat entity
+│   └── repo/                        # Chat repository
+└── message/
+    ├── entity/                      # Message entity
+    └── repo/                        # Message repository
 ```
 
 ## 🔌 API Endpoints

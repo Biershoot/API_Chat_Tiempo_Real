@@ -1,7 +1,7 @@
-package com.alejandro.microservices.api_chat.chat.chat.repo;
+package com.alex.chat.chat.repo;
 
-import com.alejandro.microservices.api_chat.chat.chat.entity.Chat;
-import com.alejandro.microservices.api_chat.chat.user.entity.User;
+import com.alex.chat.chat.entity.Chat;
+import com.alex.chat.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

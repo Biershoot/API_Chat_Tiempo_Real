@@ -1,7 +1,7 @@
-package com.alejandro.microservices.api_chat.chat.message.entity;
+package com.alex.chat.message.entity;
 
-import com.alejandro.microservices.api_chat.chat.chat.entity.Chat;
-import com.alejandro.microservices.api_chat.chat.user.entity.User;
+import com.alex.chat.chat.entity.Chat;
+import com.alex.chat.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
