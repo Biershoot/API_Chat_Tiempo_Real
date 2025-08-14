@@ -7,9 +7,9 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 
 /**
- * El mensajero que envía los mensajes a Redis.
- * Mi trabajo es tomar los mensajes y distribuirlos por el
- * canal de Redis para que lleguen a todas partes.
+ * El publicador de mensajes en Redis.
+ * Se encarga de enviar mensajes al canal compartido para
+ * que todas las instancias de la aplicación los reciban.
  */
 @Service
 public class RedisPublisher {
@@ -19,8 +19,7 @@ public class RedisPublisher {
     private final ChannelTopic topic;
 
     /**
-     * Me dan un redisTemplate para poder hacer mi trabajo,
-     * y el topic donde vamos a publicar los mensajes.
+     * Constructor que recibe las dependencias necesarias.
      */
     public RedisPublisher(RedisTemplate<String, Object> redisTemplate, ChannelTopic topic) {
         this.redisTemplate = redisTemplate;
@@ -28,8 +27,9 @@ public class RedisPublisher {
     }
 
     /**
-     * Publica un mensaje en nuestro canal de chat.
-     * Como un DJ pasando la canción que pidieron por la radio.
+     * Publica un mensaje en el canal de chat.
+     *
+     * @param message El mensaje a publicar
      */
     public void publish(String message) {
         try {
@@ -38,6 +38,23 @@ public class RedisPublisher {
             logger.debug("Mensaje publicado con éxito");
         } catch (Exception e) {
             logger.error("Error al publicar mensaje en Redis: {}", e.getMessage(), e);
+            throw new RuntimeException("Error al publicar mensaje en Redis", e);
+        }
+    }
+
+    /**
+     * Publica un mensaje en un canal específico.
+     *
+     * @param channel El canal donde publicar
+     * @param message El mensaje a publicar
+     */
+    public void publish(String channel, String message) {
+        try {
+            logger.debug("Publicando mensaje en canal personalizado '{}': {}", channel, message);
+            redisTemplate.convertAndSend(channel, message);
+            logger.debug("Mensaje publicado con éxito en canal personalizado");
+        } catch (Exception e) {
+            logger.error("Error al publicar mensaje en canal {}: {}", channel, e.getMessage(), e);
             throw new RuntimeException("Error al publicar mensaje en Redis", e);
         }
     }

@@ -3,10 +3,11 @@ package com.alex.chat.config.redis;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
@@ -18,13 +19,22 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
     /**
-     * Prepara un template para trabajar con Redis usando JSON.
-     * Nos viene bien para enviar objetos complejos serializados.
+     * Configura la conexión a Redis usando Lettuce.
+     * Lettuce es un cliente de Redis non-blocking y thread-safe.
      */
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
+    public RedisConnectionFactory redisConnectionFactory() {
+        return new LettuceConnectionFactory();
+    }
+
+    /**
+     * Prepara un template para trabajar con Redis.
+     * Este template nos permite enviar y recibir mensajes.
+     */
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(factory);
+        template.setConnectionFactory(connectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new StringRedisSerializer());
         return template;
@@ -44,10 +54,10 @@ public class RedisConfig {
      * Es como una radio que sintoniza nuestro canal y avisa cuando hay mensajes.
      */
     @Bean
-    public RedisMessageListenerContainer redisContainer(RedisConnectionFactory factory,
+    public RedisMessageListenerContainer redisContainer(RedisConnectionFactory connectionFactory,
                                                       MessageListenerAdapter listenerAdapter) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(factory);
+        container.setConnectionFactory(connectionFactory);
         container.addMessageListener(listenerAdapter, topic());
         return container;
     }
