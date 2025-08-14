@@ -51,7 +51,17 @@ public class ChatController {
     @MessageMapping("/sendMessage")
     public void sendMessage(@Validated ChatMessage message) {
         logger.debug("Mensaje WebSocket recibido: {}", message);
-        redisPublisher.publish(message.getSender() + ": " + message.getContent());
+
+        // Formatear el mensaje con remitente
+        String formattedMessage = message.getSender() + ": " + message.getContent();
+
+        // Publicar el mensaje en el canal de chat de Redis
+        // Esto distribuirá el mensaje a todas las instancias de la aplicación
+        redisPublisher.publish("chat-channel", formattedMessage);
+
+        // No necesitamos enviar el mensaje directamente a los clientes WebSocket
+        // porque el RedisMessageSubscriber ya se encarga de eso cuando recibe
+        // el mensaje desde Redis
     }
 
     /**
