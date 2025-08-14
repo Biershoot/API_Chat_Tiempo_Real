@@ -55,7 +55,7 @@ public class ChatService {
             // Formato simplificado como en los requisitos: "remitente: contenido"
             String formattedMessage = message.getSender() + ": " + message.getContent();
             logger.debug("Distribuyendo mensaje: {}", formattedMessage);
-            redisPublisher.publish(formattedMessage);
+            redisPublisher.publish("chat", formattedMessage);
         } catch (Exception e) {
             logger.error("Error al procesar el mensaje para Redis: {}", e.getMessage(), e);
             throw new RuntimeException("Error al procesar el mensaje para Redis", e);
