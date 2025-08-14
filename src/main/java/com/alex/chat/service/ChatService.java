@@ -57,11 +57,12 @@ public class ChatService {
         message.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
 
         try {
-            String jsonMessage = objectMapper.writeValueAsString(message);
-            logger.debug("Distribuyendo mensaje: {}", jsonMessage);
-            redisPublisher.publish(CHAT_CHANNEL, jsonMessage);
-        } catch (JsonProcessingException e) {
-            logger.error("Error al convertir mensaje a JSON: {}", e.getMessage(), e);
+            // Formato simplificado como en los requisitos: "remitente: contenido"
+            String formattedMessage = message.getSender() + ": " + message.getContent();
+            logger.debug("Distribuyendo mensaje: {}", formattedMessage);
+            redisPublisher.publish(formattedMessage);
+        } catch (Exception e) {
+            logger.error("Error al procesar el mensaje para Redis: {}", e.getMessage(), e);
             throw new RuntimeException("Error al procesar el mensaje para Redis", e);
         }
     }

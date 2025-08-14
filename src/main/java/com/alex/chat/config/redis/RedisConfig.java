@@ -25,7 +25,7 @@ public class RedisConfig {
      */
     @Bean
     public ChannelTopic chatTopic() {
-        return new ChannelTopic("chat-channel");
+        return new ChannelTopic("chat");  // Cambiado a "chat" para coincidir con los requisitos
     }
 
     /**

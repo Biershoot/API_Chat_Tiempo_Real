@@ -43,4 +43,18 @@ public class RedisSubscriber implements MessageListener {
             logger.error("Error al procesar mensaje de Redis: {}", e.getMessage(), e);
         }
     }
+
+    /**
+     * Método que será llamado por el adaptador de mensajes.
+     * Recibe directamente el mensaje como String y el canal.
+     */
+    public void onMessage(String message, String channel) {
+        try {
+            logger.debug("Mensaje String recibido del canal '{}': {}", channel, message);
+            messagingTemplate.convertAndSend("/topic/messages", message);
+            logger.debug("Mensaje String reenviado a clientes WebSocket");
+        } catch (Exception e) {
+            logger.error("Error al procesar mensaje String de Redis: {}", e.getMessage(), e);
+        }
+    }
 }
