@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat en Tiempo Real</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        #chat-container {
+            margin-top: 20px;
+        }
+        #chat {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #chat li {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            margin-right: 5px;
+            width: 200px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h2>Chat en Tiempo Real</h2>
+    <div>
+        <input type="text" id="sender" placeholder="Tu nombre" />
+    </div>
+    <div id="chat-container">
+        <ul id="chat"></ul>
+        <div>
+            <input type="text" id="message" placeholder="Escribe un mensaje" />
+            <button onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        let stompClient = null;
+
+        function connect() {
+            let socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function () {
+                console.log('Conectado al chat');
+                stompClient.subscribe('/topic/messages', function (msg) {
+                    let message = JSON.parse(msg.body);
+                    let li = document.createElement("li");
+                    li.appendChild(document.createTextNode(`[${message.timestamp}] ${message.sender}: ${message.content}`));
+                    document.getElementById("chat").appendChild(li);
+                });
+            }, function(error) {
+                console.error('Error de conexión:', error);
+                setTimeout(connect, 5000); // Reintentar conexión
+            });
+        }
+
+        function sendMessage() {
+            let sender = document.getElementById("sender").value;
+            let content = document.getElementById("message").value;
+
+            if (!sender || !content) {
+                alert("Por favor ingresa tu nombre y un mensaje");
+                return;
+            }
+
+            stompClient.send("/app/sendMessage", {},
+                JSON.stringify({
+                    sender: sender,
+                    content: content
+                })
+            );
+
+            // Limpiar el campo de mensaje
+            document.getElementById("message").value = '';
+        }
+
+        // Permitir enviar con Enter
+        document.getElementById("message").addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        // Conectar al cargar la página
+        window.onload = function() {
+            connect();
+        };
+    </script>
+</body>
+</html>
