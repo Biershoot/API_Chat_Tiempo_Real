@@ -3,7 +3,7 @@ package com.alex.chat.config.redis;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 
 /**
@@ -17,8 +17,8 @@ public class RedisSubscriberConfig {
      * Define el canal principal para comunicación del chat.
      */
     @Bean
-    public ChannelTopic chatTopic() {
-        return new ChannelTopic("chat-channel");
+    public PatternTopic chatTopic() {
+        return new PatternTopic("chat");
     }
 
     /**

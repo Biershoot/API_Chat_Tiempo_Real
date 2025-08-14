@@ -57,10 +57,10 @@ public class ChatController {
 
         // Publicar el mensaje en el canal de chat de Redis
         // Esto distribuirá el mensaje a todas las instancias de la aplicación
-        redisPublisher.publish("chat-channel", formattedMessage);
+        redisPublisher.publish("chat", formattedMessage);
 
         // No necesitamos enviar el mensaje directamente a los clientes WebSocket
-        // porque el RedisMessageSubscriber ya se encarga de eso cuando recibe
+        // porque el RedisSubscriber ya se encarga de eso cuando recibe
         // el mensaje desde Redis
     }
 
