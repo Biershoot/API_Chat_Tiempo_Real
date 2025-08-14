@@ -147,12 +147,6 @@ Para entornos de producción, recomendamos:
 
 ## 📈 Monitoreo y Rendimiento
 
-<div align="center">
-
-![Monitoreo](https://via.placeholder.com/800x300?text=Grafana+Dashboard+Preview)
-
-</div>
-
 La aplicación expone métricas avanzadas a través de Spring Boot Actuator y Prometheus:
 
 - **Usuarios**: Conexiones activas, historial, patrones de uso
