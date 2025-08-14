@@ -191,6 +191,110 @@ mvn verify
 - **Auditoría**: Registro detallado de accesos
 - **Cifrado**: Comunicación y datos sensibles
 
+## 🚀 Configuración e Inicio con Redis
+
+Para aprovechar al máximo la escalabilidad de la aplicación, necesitas configurar Redis correctamente. Sigue estos pasos:
+
+### Instalación de Redis
+
+#### En Windows:
+1. **Opción 1: Redis para Windows**
+   ```bash
+   # Descarga Redis para Windows desde GitHub
+   # https://github.com/microsoftarchive/redis/releases
+   # Instala el archivo .msi descargado
+   # Inicia Redis como servicio de Windows
+   ```
+
+2. **Opción 2: Redis con WSL2 (recomendado)**
+   ```bash
+   # Instala WSL2 y una distribución Linux
+   wsl --install -d Ubuntu
+
+   # Dentro de WSL, instala Redis
+   sudo apt update
+   sudo apt install redis-server
+
+   # Inicia el servidor Redis
+   sudo service redis-server start
+   ```
+
+#### En macOS:
+```bash
+# Instala Redis con Homebrew
+brew install redis
+
+# Inicia el servidor Redis
+brew services start redis
+```
+
+#### En Linux:
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install redis-server
+sudo systemctl start redis-server
+
+# CentOS/RHEL
+sudo yum install redis
+sudo systemctl start redis
+```
+
+### Verificación de Redis
+
+Para comprobar que Redis está funcionando correctamente:
+```bash
+# Conectar con la CLI de Redis
+redis-cli
+
+# En el prompt de redis, prueba
+127.0.0.1:6379> PING
+PONG
+
+# Salir
+127.0.0.1:6379> exit
+```
+
+### Configuración de la Aplicación
+
+La configuración por defecto en `application.properties` ya está lista para conectarse a Redis en localhost:6379. Si tu instancia de Redis está en otra ubicación, modifica:
+
+```properties
+# Redis Configuration
+spring.data.redis.host=tu-servidor-redis
+spring.data.redis.port=6379
+```
+
+### Inicio de la Aplicación con Redis
+
+1. **Asegúrate de que Redis está ejecutándose**
+
+2. **Inicia la aplicación**:
+   ```bash
+   # Usando Maven
+   mvn spring-boot:run
+
+   # O con el JAR empaquetado
+   java -jar target/realtime-chat-0.0.1-SNAPSHOT.jar
+   ```
+
+3. **Verifica la conexión**: Si todo está configurado correctamente, deberías ver estos mensajes en los logs:
+   ```
+   INFO  [main] RedisMessageSubscriber : RedisMessageSubscriber inicializado
+   INFO  [main] o.s.d.r.l.RedisMessageListenerContainer : Container initialized
+   ```
+
+4. **Prueba la distribución de mensajes**:
+   - Conecta varios clientes a la aplicación
+   - Los mensajes enviados a través de Redis serán recibidos por todos los clientes
+   - Puedes iniciar múltiples instancias de la aplicación en diferentes puertos para probar la escalabilidad
+
+### Troubleshooting
+
+- **Error de conexión**: Si ves `Connection refused: localhost:6379`, asegúrate de que Redis está ejecutándose.
+- **Problemas de serialización**: Verifica que tus objetos de mensaje son serializables.
+- **Configuración avanzada**: Para entornos de producción, considera configurar Redis en modo cluster con Sentinel para alta disponibilidad.
+
 ## 👨‍💻 Autor
 
 <div align="center">
