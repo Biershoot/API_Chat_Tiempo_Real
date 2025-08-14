@@ -2,7 +2,6 @@ package com.alex.chat.config.redis;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -15,17 +14,19 @@ import org.springframework.stereotype.Service;
 public class RedisPublisher {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisPublisher.class);
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    public RedisPublisher(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     /**
      * Publica un mensaje en el canal especificado.
      *
      * @param channel Canal donde publicar el mensaje
-     * @param message Mensaje a publicar
+     * @param message Mensaje u objeto a publicar
      */
-    public void publish(String channel, String message) {
+    public void publish(String channel, Object message) {
         try {
             logger.debug("Publicando mensaje en canal '{}': {}", channel, message);
             redisTemplate.convertAndSend(channel, message);
