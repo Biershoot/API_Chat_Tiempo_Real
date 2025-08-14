@@ -95,6 +95,16 @@
             <artifactId>spring-data-redis</artifactId>
         </dependency>
 
+        <!-- Monitoreo y Métricas (Fase 6) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
         <!-- Lombok (opcional) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
