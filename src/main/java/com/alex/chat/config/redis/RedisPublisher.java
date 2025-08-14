@@ -46,16 +46,16 @@ public class RedisPublisher {
      * Publica un mensaje en un canal específico.
      *
      * @param channel El canal donde publicar
-     * @param message El mensaje a publicar
+     * @param message El mensaje u objeto a publicar
      */
-    public void publish(String channel, String message) {
+    public void publish(String channel, Object message) {
         try {
-            logger.debug("Publicando mensaje en canal personalizado '{}': {}", channel, message);
+            logger.debug("Publicando objeto en canal '{}': {}", channel, message);
             redisTemplate.convertAndSend(channel, message);
-            logger.debug("Mensaje publicado con éxito en canal personalizado");
+            logger.debug("Objeto publicado con éxito en canal personalizado");
         } catch (Exception e) {
-            logger.error("Error al publicar mensaje en canal {}: {}", channel, e.getMessage(), e);
-            throw new RuntimeException("Error al publicar mensaje en Redis", e);
+            logger.error("Error al publicar en canal {}: {}", channel, e.getMessage(), e);
+            throw new RuntimeException("Error al publicar en Redis", e);
         }
     }
 }

@@ -4,11 +4,11 @@ import com.alex.chat.config.redis.RedisPublisher;
 import com.alex.chat.dto.ChatMessage;
 import com.alex.chat.message.entity.Message;
 import com.alex.chat.message.repo.MessageRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,24 +28,19 @@ import java.util.Optional;
 public class ChatService {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatService.class);
-    private static final String CHAT_CHANNEL = "chat-channel";
 
     private final MessageRepository messageRepository;
     private final RedisPublisher redisPublisher;
-    private final ObjectMapper objectMapper;
 
     /**
      * Constructor donde recibo todas las dependencias que necesito.
-     * El repositorio para guardar los mensajes, el publisher para Redis
-     * y el mapper para convertir entre Java y JSON.
+     * El repositorio para guardar los mensajes, el publisher para Redis.
      */
     @Autowired
     public ChatService(MessageRepository messageRepository,
-                       RedisPublisher redisPublisher,
-                       ObjectMapper objectMapper) {
+                       RedisPublisher redisPublisher) {
         this.messageRepository = messageRepository;
         this.redisPublisher = redisPublisher;
-        this.objectMapper = objectMapper;
     }
 
     /**
@@ -70,38 +65,56 @@ public class ChatService {
     /**
      * Devuelve todos los mensajes que tenemos guardados.
      * Útil para cargar el historial al entrar al chat.
+     * Usa caché para mejorar el rendimiento con muchos usuarios.
      */
+    @Cacheable(value = "messages", key = "'all'")
     @Transactional(readOnly = true)
     public List<Message> getAllMessages() {
-        logger.debug("Obteniendo todos los mensajes");
+        logger.debug("Obteniendo todos los mensajes (caché miss)");
         return messageRepository.findAll();
     }
 
     /**
      * Busca un mensaje concreto por su ID.
      * Si existe lo devuelve, si no... pues nada.
+     * Usa caché para evitar consultas repetidas a la base de datos.
      */
+    @Cacheable(value = "messages", key = "#id")
     @Transactional(readOnly = true)
     public Optional<Message> getMessageById(Long id) {
-        logger.debug("Buscando mensaje con ID: {}", id);
+        logger.debug("Buscando mensaje con ID: {} (caché miss)", id);
         return messageRepository.findById(id);
     }
 
     /**
      * Guarda un mensaje nuevo en la base de datos.
      * Le añado la fecha y hora actual antes de guardarlo.
+     * Al guardar un nuevo mensaje, invalida la caché de todos los mensajes.
      */
+    @CacheEvict(value = "messages", key = "'all'")
     @Transactional
     public Message saveMessage(Message message) {
         message.setSentAt(LocalDateTime.now());
         logger.debug("Guardando mensaje: {}", message);
-        return messageRepository.save(message);
+        Message savedMessage = messageRepository.save(message);
+
+        // Publicar el mensaje guardado en Redis para que todas las instancias se enteren
+        try {
+            String notification = "NEW_MESSAGE:" + savedMessage.getId();
+            redisPublisher.publish("chat-notifications", notification);
+        } catch (Exception e) {
+            logger.warn("No se pudo notificar el nuevo mensaje: {}", e.getMessage());
+        }
+
+        return savedMessage;
     }
 
     /**
      * Borra un mensaje si existe.
      * Devuelve OK si lo encontré y borré, o Not Found si no existía.
+     * Al borrar un mensaje, invalida tanto la caché de ese mensaje como la de todos.
      */
+    @CacheEvict(value = "messages", allEntries = true)
     @Transactional
     public ResponseEntity<Map<String, Boolean>> deleteMessage(Long id) {
         return messageRepository.findById(id)
