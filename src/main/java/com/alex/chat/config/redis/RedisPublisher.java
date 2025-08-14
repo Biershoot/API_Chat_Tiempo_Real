@@ -20,11 +20,11 @@ public class RedisPublisher {
 
     /**
      * Me dan un redisTemplate para poder hacer mi trabajo,
-     * y configuro el canal "chat" que vamos a usar siempre.
+     * y el topic donde vamos a publicar los mensajes.
      */
-    public RedisPublisher(RedisTemplate<String, Object> redisTemplate) {
+    public RedisPublisher(RedisTemplate<String, Object> redisTemplate, ChannelTopic topic) {
         this.redisTemplate = redisTemplate;
-        this.topic = new ChannelTopic("chat");
+        this.topic = topic;
     }
 
     /**

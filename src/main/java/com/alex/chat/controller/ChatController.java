@@ -1,5 +1,6 @@
 package com.alex.chat.controller;
 
+import com.alex.chat.config.redis.RedisPublisher;
 import com.alex.chat.dto.ChatMessage;
 import com.alex.chat.message.entity.Message;
 import com.alex.chat.service.ChatService;
@@ -34,21 +35,23 @@ public class ChatController {
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
     private final ChatService chatService;
+    private final RedisPublisher redisPublisher;
 
     @Autowired
-    public ChatController(ChatService chatService) {
+    public ChatController(ChatService chatService, RedisPublisher redisPublisher) {
         this.chatService = chatService;
+        this.redisPublisher = redisPublisher;
     }
 
     /**
      * Endpoint para recibir mensajes por WebSocket.
-     * Cuando alguien manda un mensaje, lo recibo y lo paso al servicio
-     * para que lo distribuya a todos los demás.
+     * Cuando alguien manda un mensaje, lo recibo y lo publico en Redis
+     * para que llegue a todas las instancias de la aplicación.
      */
     @MessageMapping("/sendMessage")
     public void sendMessage(@Validated ChatMessage message) {
         logger.debug("Mensaje WebSocket recibido: {}", message);
-        chatService.processAndDistributeMessage(message);
+        redisPublisher.publish(message.getSender() + ": " + message.getContent());
     }
 
     /**

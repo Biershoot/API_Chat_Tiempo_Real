@@ -3,12 +3,10 @@ package com.alex.chat.config.redis;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
@@ -20,12 +18,25 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
     /**
+     * Prepara un template para trabajar con Redis usando JSON.
+     * Nos viene bien para enviar objetos complejos serializados.
+     */
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(factory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new StringRedisSerializer());
+        return template;
+    }
+
+    /**
      * Define el canal donde vamos a intercambiar los mensajes.
      * Es como una frecuencia de radio a la que todos escuchamos.
      */
     @Bean
-    public ChannelTopic chatTopic() {
-        return new ChannelTopic("chat");  // Cambiado a "chat" para coincidir con los requisitos
+    public ChannelTopic topic() {
+        return new ChannelTopic("chat");
     }
 
     /**
@@ -33,12 +44,11 @@ public class RedisConfig {
      * Es como una radio que sintoniza nuestro canal y avisa cuando hay mensajes.
      */
     @Bean
-    public RedisMessageListenerContainer redisMessageListenerContainer(
-            RedisConnectionFactory connectionFactory,
-            MessageListenerAdapter listenerAdapter) {
+    public RedisMessageListenerContainer redisContainer(RedisConnectionFactory factory,
+                                                      MessageListenerAdapter listenerAdapter) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(listenerAdapter, chatTopic());
+        container.setConnectionFactory(factory);
+        container.addMessageListener(listenerAdapter, topic());
         return container;
     }
 
@@ -47,32 +57,7 @@ public class RedisConfig {
      * Básicamente le dice a Redis: "cuando llegue un mensaje, llama a este método".
      */
     @Bean
-    public MessageListenerAdapter messageListenerAdapter(RedisSubscriber subscriber) {
+    public MessageListenerAdapter listenerAdapter(RedisSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "onMessage");
-    }
-
-    /**
-     * Prepara un template para trabajar con Redis usando JSON.
-     * Nos viene bien para enviar objetos complejos serializados.
-     */
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
-        template.afterPropertiesSet();
-        return template;
-    }
-
-    /**
-     * Prepara un template para trabajar con Redis usando Strings.
-     * Más simple, pero suficiente para mensajes de texto plano.
-     */
-    @Bean
-    public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory connectionFactory) {
-        return new StringRedisTemplate(connectionFactory);
     }
 }
